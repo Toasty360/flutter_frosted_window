@@ -118,7 +118,7 @@ class NavTile extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           if (showIcon) Icon(item.icon),
-          if (showIcon) const SizedBox(width: 5),y
+          if (showIcon) const SizedBox(width: 5),
           Text(item.title, maxLines: 1, overflow: TextOverflow.ellipsis),
         ],
       ),
