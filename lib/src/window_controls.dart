@@ -1,8 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
-class WindowControls extends StatelessWidget {
+class WindowControls extends StatefulWidget {
   const WindowControls({super.key});
+
+  @override
+  State<WindowControls> createState() => _WindowControlsState();
+}
+
+class _WindowControlsState extends State<WindowControls> with WindowListener {
+  bool _isMaximized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    windowManager.addListener(this);
+    _checkMaximized();
+  }
+
+  @override
+  void dispose() {
+    windowManager.removeListener(this);
+    super.dispose();
+  }
+
+  @override
+  void onWindowMaximize() {
+    setState(() => _isMaximized = true);
+  }
+
+  @override
+  void onWindowUnmaximize() {
+    setState(() => _isMaximized = false);
+  }
+
+  Future<void> _checkMaximized() async {
+    final isMaximized = await windowManager.isMaximized();
+    if (mounted) {
+      setState(() => _isMaximized = isMaximized);
+    }
+  }
+
+  Future<void> _toggleMaximize() async {
+    if (_isMaximized) {
+      await windowManager.unmaximize();
+    } else {
+      await windowManager.maximize();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,8 +55,8 @@ class WindowControls extends StatelessWidget {
       children: [
         WindowButton(iconData: Icons.remove, onPressed: windowManager.minimize),
         WindowButton(
-          iconData: Icons.crop_square,
-          onPressed: windowManager.maximize,
+          iconData: _isMaximized ? Icons.filter_none : Icons.crop_square,
+          onPressed: _toggleMaximize,
         ),
         WindowButton(iconData: Icons.close, onPressed: windowManager.close),
       ],
